@@ -13,10 +13,31 @@
 ![](ApacheCounts.png)
 
 ## Apache Server IP Locations Outside of the United States
-- This report establishes the baseline to inform an alert
+- This report establishes the baseline to inform an alert around hour counts of the POST method 
 `source="apache_logs.txt" | iplocation clientip | where Country!="United States" |stats count by _time | stats avg(count) median(count) min(count) max(count)`
 
 ### Apache Server Alert for IP Locations Outside of the USA observed 
 - This is the hourly alert monitor in Splunk to report when non-US hits to the Apache server is above baseline 
 
 `source="apache_logs.txt" | iplocation clientip | where Country!="United States" |  bucket_time span=1h | stats count by _time | stats avg(count) median(count) min(count) max(count)` 
+
+### Apache Server iplocations mapped by country 
+- This query returns the data used to map the country location based on the `clientip` field.
+
+`source="apache_logs.txt" | iplocation clientip | geostats count by Country` 
+![](ApacheMap.png)
+
+## Apache Server count of top 10 country traffic volume 
+- Query that returns the data to visualize via a bar, column, or pie chart that displays the counts of the top 10 countries.
+
+`source="apache_logs.txt" | iplocation clientip | top limit=10 Country`
+
+### Apache Server count of distinct URIs 
+-  Counts total URIs observed 
+`source="apache_logs.txt"| stats count values(uri)` 
+
+### Apache Server count of top 15 URIs by volume
+- This query returns the data that is passed to the chart that displays the number of different URIs.
+`source="apache_logs.txt"| top uri limit=15` 
+![](ApacheCountUri.png)
+
