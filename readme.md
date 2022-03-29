@@ -41,3 +41,19 @@
 `source="apache_logs.txt"| top uri limit=15` 
 ![](ApacheCountUri.png)
 
+
+## Windows Server Logs Severity Read Out
+- This query returns a count of incidents by severity 
+`source="windows_server_logs.csv" host="aa919eeffb10" sourcetype="csv"  | stats count by severity | eventstats sum(count) as perc | eval perc=round(count*100/perc,2)` 
+
+## Windows Server Logs Success and Failure Report
+- Count of failure/success 
+`source="windows_server_attack_logs.csv"  | stats count by status | eventstats sum(count) as perc | eval perc=round(count*100/perc,2)`
+
+## Windows Alerts for High Failure Status Baselininng
+- Stats to trigger alert thresholds for failure rates
+`source="windows_server_logs.csv" host="aa919eeffb10" sourcetype="csv" status="failure" | bucket_time span=1h | stats count by _time | stats avg(count) median(count) min(count) max(count)` 
+
+## Windows Server Logs Alerts for High Successful login Baselining
+- Stats
+`source="windows_server_logs.csv" host="aa919eeffb10" sourcetype="csv" signature="An account was successfully logged on" | bucket_time span=1h | stats count by _time | stats avg(count) median(count) min(count) max(count)` 
