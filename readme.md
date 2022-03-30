@@ -12,6 +12,10 @@
 
 ![](ApacheCounts.png)
 
+## Apache Server Post requesets baselining 
+- Query to establish baseline for post requests alerts 
+`source="apache_logs.txt" host="aa919eeffb10" sourcetype="access_combined"  method=POST |stats count by _time | stats avg(count) median(count) min(count) max(count)`
+
 ## Apache Server IP Locations Outside of the United States
 - This report establishes the baseline to inform an alert around hour counts of the POST method 
 `source="apache_logs.txt" | iplocation clientip | where Country!="United States" |stats count by _time | stats avg(count) median(count) min(count) max(count)`
@@ -57,3 +61,13 @@
 ## Windows Server Logs Alerts for High Successful login Baselining
 - Stats
 `source="windows_server_logs.csv" host="aa919eeffb10" sourcetype="csv" signature="An account was successfully logged on" | bucket_time span=1h | stats count by _time | stats avg(count) median(count) min(count) max(count)` 
+
+signature IN "An account was successfully logged on", "A user account was locked out", "An account was successfully logged on", "An attempt was made to reset an accounts password"
+
+# Cluster Map Query - Map POST requests by Source IP 
+- Data to visualize a cluster map 
+`source="radialgauge.csv" http_method="POST"  | iplocation src_ip | geostats count`
+
+# Splunk Query to select multiple fields/values in a variable
+- This is the equivalent of WHERE IN( ) in SQL
+`source="windows_server_attack_logs.csv"  signature IN ("An account was successfully logged on", "A user account was locked out", "An attempt was made to reset an accounts password") | stats count by user`
